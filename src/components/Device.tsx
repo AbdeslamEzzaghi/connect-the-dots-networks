@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect, useState } from 'react';
 import { useNetworkStore } from '@/lib/network-store';
 import { DeviceData, connectionColors, hasWireless } from '@/lib/types';
@@ -8,12 +7,11 @@ import {
   Router,
   Antenna,
   CableCar,
-  Network,
+  SquareDashedBottomCode,
   Cable,
-  ServerCog,
+  Network,
   Phone,
-  EthernetPort,
-  FiberOptic,
+  Bus,
 } from 'lucide-react';
 
 interface DeviceProps {
@@ -109,23 +107,23 @@ export const Device: React.FC<DeviceProps> = ({ device, selected }) => {
   const getDeviceIcon = () => {
     switch (device.type) {
       case 'isp':
-        return <ServerCog className="h-7 w-7" />;
+        return <Network className="h-7 w-7" />;
       case 'accessPoint':
         return <Wifi className="h-7 w-7" />;
       case 'router':
         return <Router className="h-7 w-7" />;
       case 'switch':
-        return <EthernetPort className="h-7 w-7" />;
+        return <SquareDashedBottomCode className="h-7 w-7" />;
       case 'repeater':
         return <Antenna className="h-7 w-7" />;
       case 'modem':
         return <Cable className="h-7 w-7" />;
       case 'ont':
-        return <FiberOptic className="h-7 w-7" />;
+        return <CableCar className="h-7 w-7" />;
       case 'wallPhoneJack':
         return <Phone className="h-7 w-7" />;
       case 'bus':
-        return <Cable className="h-7 w-7" />;
+        return <Bus className="h-7 w-7" />;
       default:
         return <div className="h-7 w-7" />;
     }
