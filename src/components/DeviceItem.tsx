@@ -3,15 +3,15 @@ import React from 'react';
 import { DeviceType } from '@/lib/types';
 import { useTranslation } from '@/lib/i18n';
 import {
-  Network,
   Wifi,
   Router,
-  Server,
-  Repeat,
-  Modem,
-  Database,
-  Phone,
+  Antenna,
+  CableCar,
+  SquareDashedBottomCode,
   Cable,
+  Network,
+  Phone,
+  Bus,
 } from 'lucide-react';
 
 interface DeviceItemProps {
@@ -25,23 +25,23 @@ export const DeviceItem: React.FC<DeviceItemProps> = ({ type, onDragStart }) => 
   const getDeviceIcon = () => {
     switch (type) {
       case 'isp':
-        return <Server className="h-6 w-6" />;
+        return <Network className="h-6 w-6" />;
       case 'accessPoint':
         return <Wifi className="h-6 w-6" />;
       case 'router':
         return <Router className="h-6 w-6" />;
       case 'switch':
-        return <Network className="h-6 w-6" />;
+        return <SquareDashedBottomCode className="h-6 w-6" />;
       case 'repeater':
-        return <Repeat className="h-6 w-6" />;
+        return <Antenna className="h-6 w-6" />;
       case 'modem':
-        return <Modem className="h-6 w-6" />;
+        return <Cable className="h-6 w-6" />;
       case 'ont':
-        return <Database className="h-6 w-6" />;
+        return <CableCar className="h-6 w-6" />;
       case 'wallPhoneJack':
         return <Phone className="h-6 w-6" />;
       case 'bus':
-        return <Cable className="h-6 w-6" />;
+        return <Bus className="h-6 w-6" />;
       default:
         return <div className="h-6 w-6" />;
     }
