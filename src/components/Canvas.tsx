@@ -4,6 +4,8 @@ import { useNetworkStore } from '@/lib/network-store';
 import { Device } from './Device';
 import { Connection, TemporaryConnection } from './Connection';
 import { DeviceType } from '@/lib/types';
+import { ZoomIn, ZoomOut } from 'lucide-react';
+import { Button } from './ui/button';
 
 interface CanvasProps {
   onCanvasClick: () => void;
@@ -12,6 +14,7 @@ interface CanvasProps {
 export const Canvas: React.FC<CanvasProps> = ({ onCanvasClick }) => {
   const canvasRef = useRef<HTMLDivElement>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
   
   const { 
     history, 
@@ -32,8 +35,8 @@ export const Canvas: React.FC<CanvasProps> = ({ onCanvasClick }) => {
       
       const rect = canvasRef.current.getBoundingClientRect();
       setMousePosition({
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top
+        x: (e.clientX - rect.left) / zoom,
+        y: (e.clientY - rect.top) / zoom
       });
     };
     
@@ -42,7 +45,7 @@ export const Canvas: React.FC<CanvasProps> = ({ onCanvasClick }) => {
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
     };
-  }, []);
+  }, [zoom]);
   
   // Handle dropping devices onto the canvas
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
@@ -54,8 +57,8 @@ export const Canvas: React.FC<CanvasProps> = ({ onCanvasClick }) => {
     const rect = canvasRef.current?.getBoundingClientRect();
     if (!rect) return;
     
-    const x = e.clientX - rect.left - 40; // Center the device
-    const y = e.clientY - rect.top - 40;
+    const x = (e.clientX - rect.left) / zoom - 40; // Center the device
+    const y = (e.clientY - rect.top) / zoom - 40;
     
     addDevice(deviceType, { x, y });
   };
@@ -73,6 +76,15 @@ export const Canvas: React.FC<CanvasProps> = ({ onCanvasClick }) => {
         onCanvasClick();
       }
     }
+  };
+  
+  // Zoom controls
+  const zoomIn = () => {
+    setZoom(prev => Math.min(prev + 0.1, 2)); // Max zoom: 2x
+  };
+  
+  const zoomOut = () => {
+    setZoom(prev => Math.max(prev - 0.1, 0.5)); // Min zoom: 0.5x
   };
   
   // Find positions for connections
@@ -95,46 +107,64 @@ export const Canvas: React.FC<CanvasProps> = ({ onCanvasClick }) => {
     getPortPosition(connectingFrom.deviceId, connectingFrom.portId) : null;
   
   return (
-    <div 
-      ref={canvasRef}
-      className="network-canvas w-full h-full border rounded-lg relative"
-      style={{ backgroundImage: backgroundImage ? `url(${backgroundImage})` : 'none' }}
-      onDrop={handleDrop}
-      onDragOver={handleDragOver}
-      onClick={handleCanvasClick}
-    >
-      {/* Connection Lines */}
-      {connections.map(connection => {
-        const sourcePosition = getPortPosition(connection.sourceDeviceId, connection.sourcePortId);
-        const targetPosition = getPortPosition(connection.targetDeviceId, connection.targetPortId);
+    <div className="relative w-full h-full">
+      {/* Zoom controls */}
+      <div className="absolute top-2 right-2 z-30 flex gap-1">
+        <Button variant="secondary" size="icon" onClick={zoomIn} title="Zoom In">
+          <ZoomIn className="h-4 w-4" />
+        </Button>
+        <Button variant="secondary" size="icon" onClick={zoomOut} title="Zoom Out">
+          <ZoomOut className="h-4 w-4" />
+        </Button>
+      </div>
+      
+      <div 
+        ref={canvasRef}
+        className="network-canvas w-full h-full border rounded-lg relative overflow-auto"
+        style={{ 
+          backgroundImage: backgroundImage ? `url(${backgroundImage})` : 'none',
+          transform: `scale(${zoom})`,
+          transformOrigin: 'top left',
+          height: `${100 / zoom}%`,
+          width: `${100 / zoom}%`
+        }}
+        onDrop={handleDrop}
+        onDragOver={handleDragOver}
+        onClick={handleCanvasClick}
+      >
+        {/* Connection Lines */}
+        {connections.map(connection => {
+          const sourcePosition = getPortPosition(connection.sourceDeviceId, connection.sourcePortId);
+          const targetPosition = getPortPosition(connection.targetDeviceId, connection.targetPortId);
+          
+          return (
+            <Connection
+              key={connection.id}
+              connection={connection}
+              sourcePosition={sourcePosition}
+              targetPosition={targetPosition}
+            />
+          );
+        })}
         
-        return (
-          <Connection
-            key={connection.id}
-            connection={connection}
-            sourcePosition={sourcePosition}
-            targetPosition={targetPosition}
+        {/* Temporary Connection Line */}
+        {tempConnectionSource && connectingType && (
+          <TemporaryConnection
+            sourcePosition={tempConnectionSource}
+            targetPosition={mousePosition}
+            type={connectingType}
           />
-        );
-      })}
-      
-      {/* Temporary Connection Line */}
-      {tempConnectionSource && connectingType && (
-        <TemporaryConnection
-          sourcePosition={tempConnectionSource}
-          targetPosition={mousePosition}
-          type={connectingType}
-        />
-      )}
-      
-      {/* Devices */}
-      {devices.map(device => (
-        <Device 
-          key={device.id}
-          device={device}
-          selected={device.id === selectedDeviceId}
-        />
-      ))}
+        )}
+        
+        {/* Devices */}
+        {devices.map(device => (
+          <Device 
+            key={device.id}
+            device={device}
+            selected={device.id === selectedDeviceId}
+          />
+        ))}
+      </div>
     </div>
   );
 };

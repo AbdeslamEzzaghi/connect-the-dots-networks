@@ -27,6 +27,7 @@ export interface NetworkStore {
   connectingType: ConnectionType | null;
   
   // Actions
+  saveState: (newState: NetworkState) => void; // Added missing interface method
   addDevice: (type: DeviceType, position: { x: number, y: number }) => void;
   updateDeviceName: (id: string, name: string) => void;
   updateDevicePosition: (id: string, position: { x: number, y: number }) => void;
