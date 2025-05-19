@@ -6,6 +6,9 @@ import {
   Cable,
   Phone,
   Wifi,
+  Network,
+  Database,
+  Modem,
 } from 'lucide-react';
 
 interface ConnectionItemProps {
@@ -19,12 +22,12 @@ export const ConnectionItem: React.FC<ConnectionItemProps> = ({ type, onClick })
   const getConnectionIcon = () => {
     switch (type) {
       case 'rj45':
-        return <Cable className="h-5 w-5" />;
+        return <Network className="h-5 w-5" />;
       case 'rj11':
       case 'telephone':
         return <Phone className="h-5 w-5" />;
       case 'fiber':
-        return <Cable className="h-5 w-5" />;
+        return <Database className="h-5 w-5" />;
       case 'coaxial':
         return <Cable className="h-5 w-5" />;
       case 'wireless':
