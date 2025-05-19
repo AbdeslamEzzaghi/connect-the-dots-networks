@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -13,7 +14,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
+    --primary: 221.2 83% 53.3%;
     --primary-foreground: 210 40% 98%;
 
     --secondary: 210 40% 96.1%;
@@ -61,7 +62,7 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
     --primary-foreground: 222.2 47.4% 11.2%;
 
     --secondary: 217.2 32.6% 17.5%;
@@ -97,5 +98,109 @@
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Inter', sans-serif;
   }
+}
+
+.device {
+  cursor: move;
+  user-select: none;
+}
+
+.network-canvas {
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.wireless-range {
+  position: absolute;
+  border-radius: 50%;
+  border: 2px dashed rgba(59, 130, 246, 0.5);
+  background-color: rgba(59, 130, 246, 0.1);
+  pointer-events: none;
+  z-index: 5;
+  transform: translate(-50%, -50%);
+}
+
+.connection-line {
+  position: absolute;
+  height: 2px;
+  background-color: #000;
+  transform-origin: 0 0;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.connection-line.rj45 {
+  background-color: #3b82f6;
+  height: 3px;
+}
+
+.connection-line.rj11 {
+  background-color: #10b981;
+  height: 3px;
+}
+
+.connection-line.telephone {
+  background-color: #a855f7;
+  height: 3px;
+}
+
+.connection-line.fiber {
+  background-color: #f59e0b;
+  height: 3px;
+}
+
+.connection-line.coaxial {
+  background-color: #ef4444;
+  height: 3px;
+}
+
+.connection-line.wireless {
+  background-color: #6b7280;
+  height: 2px;
+  border: 1px dashed #6b7280;
+}
+
+.device-port {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background-color: #6b7280;
+  border-radius: 50%;
+  z-index: 20;
+  cursor: pointer;
+}
+
+.hover-info {
+  position: absolute;
+  background-color: rgba(255, 255, 255, 0.95);
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  max-width: 300px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  pointer-events: none;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.temporary-connection {
+  position: absolute;
+  height: 2px;
+  background-color: #6b7280;
+  transform-origin: 0 0;
+  z-index: 10;
+  animation: pulse 2s infinite;
 }
