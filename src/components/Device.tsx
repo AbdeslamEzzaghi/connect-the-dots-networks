@@ -1,18 +1,16 @@
-
 import React, { useRef, useEffect, useState } from 'react';
 import { useNetworkStore } from '@/lib/network-store';
 import { DeviceData, connectionColors, hasWireless } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import {
-  Wifi,
+  Cloud,
   Router,
   Antenna,
-  CableCar,
-  SquareDashedBottomCode,
-  Cable,
+  Box,
+  Switch,
   Network,
-  Phone,
-  Bus,
+  TextCursorInput,
+  LineChart,
 } from 'lucide-react';
 
 interface DeviceProps {
@@ -117,23 +115,23 @@ export const Device: React.FC<DeviceProps> = ({ device, selected }) => {
   const getDeviceIcon = () => {
     switch (device.type) {
       case 'isp':
-        return <Network className="h-7 w-7" />;
+        return <Cloud className="h-7 w-7" />;
       case 'accessPoint':
-        return <Wifi className="h-7 w-7" />;
+        return <Router className="h-7 w-7" />;
       case 'router':
         return <Router className="h-7 w-7" />;
       case 'switch':
-        return <SquareDashedBottomCode className="h-7 w-7" />;
+        return <Switch className="h-7 w-7" />;
       case 'repeater':
         return <Antenna className="h-7 w-7" />;
       case 'modem':
-        return <Cable className="h-7 w-7" />;
+        return <Box className="h-7 w-7" />;
       case 'ont':
-        return <CableCar className="h-7 w-7" />;
+        return <Box className="h-7 w-7" />;
       case 'wallPhoneJack':
-        return <Phone className="h-7 w-7" />;
+        return <TextCursorInput className="h-7 w-7" />;
       case 'bus':
-        return <Bus className="h-7 w-7" />;
+        return <LineChart className="h-7 w-7" />; // Using LineChart to represent a bus/line
       default:
         return <div className="h-7 w-7" />;
     }
@@ -152,7 +150,7 @@ export const Device: React.FC<DeviceProps> = ({ device, selected }) => {
             top: device.position.y + 40 - (device.wirelessRange! * 10),
             width: device.wirelessRange! * 20, // Convert meters to pixels
             height: device.wirelessRange! * 20,
-            transform: 'translate(-0%, -0%)',
+            zIndex: 5, // Make sure it appears behind devices but above background
             pointerEvents: 'none'
           }}
         />

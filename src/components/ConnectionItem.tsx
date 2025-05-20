@@ -4,7 +4,6 @@ import { ConnectionType, connectionColors } from '@/lib/types';
 import { useTranslation } from '@/lib/i18n';
 import {
   Cable,
-  Phone,
   Wifi,
 } from 'lucide-react';
 
@@ -19,10 +18,9 @@ export const ConnectionItem: React.FC<ConnectionItemProps> = ({ type, onClick })
   const getConnectionIcon = () => {
     switch (type) {
       case 'rj45':
-        return <Cable className="h-5 w-5" />;
       case 'rj11':
       case 'telephone':
-        return <Phone className="h-5 w-5" />;
+        return <Cable className="h-5 w-5" />;
       case 'fiber':
         return <Cable className="h-5 w-5" />;
       case 'coaxial':
