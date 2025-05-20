@@ -3,14 +3,15 @@ import React from 'react';
 import { DeviceType } from '@/lib/types';
 import { useTranslation } from '@/lib/i18n';
 import {
-  Cloud,
+  Wifi,
   Router,
   Antenna,
-  Box,
+  CableCar,
+  SquareDashedBottomCode,
+  Cable,
   Network,
-  TextCursorInput,
-  LineChart,
-  ServerStack,
+  Phone,
+  Bus,
 } from 'lucide-react';
 
 interface DeviceItemProps {
@@ -24,23 +25,23 @@ export const DeviceItem: React.FC<DeviceItemProps> = ({ type, onDragStart }) => 
   const getDeviceIcon = () => {
     switch (type) {
       case 'isp':
-        return <Cloud className="h-6 w-6" />;
+        return <Network className="h-6 w-6" />;
       case 'accessPoint':
-        return <Router className="h-6 w-6" />;
+        return <Wifi className="h-6 w-6" />;
       case 'router':
         return <Router className="h-6 w-6" />;
       case 'switch':
-        return <ServerStack className="h-6 w-6" />; // Using ServerStack for switch
+        return <SquareDashedBottomCode className="h-6 w-6" />;
       case 'repeater':
         return <Antenna className="h-6 w-6" />;
       case 'modem':
-        return <Box className="h-6 w-6" />;
+        return <Cable className="h-6 w-6" />;
       case 'ont':
-        return <Box className="h-6 w-6" />;
+        return <CableCar className="h-6 w-6" />;
       case 'wallPhoneJack':
-        return <TextCursorInput className="h-6 w-6" />;
+        return <Phone className="h-6 w-6" />;
       case 'bus':
-        return <LineChart className="h-6 w-6" />; // Representing bus as a line
+        return <Bus className="h-6 w-6" />;
       default:
         return <div className="h-6 w-6" />;
     }

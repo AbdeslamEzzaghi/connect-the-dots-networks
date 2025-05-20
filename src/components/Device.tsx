@@ -1,10 +1,19 @@
+
 import React, { useRef, useEffect, useState } from 'react';
 import { useNetworkStore } from '@/lib/network-store';
-import { DeviceData, hasWireless } from '@/lib/types';
+import { DeviceData, connectionColors, hasWireless } from '@/lib/types';
 import { cn } from '@/lib/utils';
-import { DeviceIcon } from './DeviceIcon';
-import { DevicePort } from './DevicePort';
-import { WirelessRange } from './WirelessRange';
+import {
+  Wifi,
+  Router,
+  Antenna,
+  CableCar,
+  SquareDashedBottomCode,
+  Cable,
+  Network,
+  Phone,
+  Bus,
+} from 'lucide-react';
 
 interface DeviceProps {
   device: DeviceData;
@@ -78,7 +87,9 @@ export const Device: React.FC<DeviceProps> = ({ device, selected }) => {
     };
   }, [device.id, dragging, dragOffset, selectDevice, updateDevicePosition]);
 
-  const handlePortClick = (portId: string) => {
+  const handlePortClick = (e: React.MouseEvent<HTMLDivElement>, portId: string) => {
+    e.stopPropagation();
+    
     const port = device.ports.find(p => p.id === portId);
     if (!port) return;
     
@@ -103,16 +114,47 @@ export const Device: React.FC<DeviceProps> = ({ device, selected }) => {
     }
   };
 
+  const getDeviceIcon = () => {
+    switch (device.type) {
+      case 'isp':
+        return <Network className="h-7 w-7" />;
+      case 'accessPoint':
+        return <Wifi className="h-7 w-7" />;
+      case 'router':
+        return <Router className="h-7 w-7" />;
+      case 'switch':
+        return <SquareDashedBottomCode className="h-7 w-7" />;
+      case 'repeater':
+        return <Antenna className="h-7 w-7" />;
+      case 'modem':
+        return <Cable className="h-7 w-7" />;
+      case 'ont':
+        return <CableCar className="h-7 w-7" />;
+      case 'wallPhoneJack':
+        return <Phone className="h-7 w-7" />;
+      case 'bus':
+        return <Bus className="h-7 w-7" />;
+      default:
+        return <div className="h-7 w-7" />;
+    }
+  };
+
   const shouldShowWirelessRange = hasWireless(device.type) && device.wirelessRange;
 
   return (
     <>
       {/* Wireless Range Circle */}
       {shouldShowWirelessRange && (
-        <WirelessRange 
-          x={device.position.x} 
-          y={device.position.y} 
-          range={device.wirelessRange!} 
+        <div 
+          className="wireless-range absolute rounded-full opacity-20 bg-blue-200 border border-blue-300" 
+          style={{
+            left: device.position.x + 40 - (device.wirelessRange! * 10), // center of device
+            top: device.position.y + 40 - (device.wirelessRange! * 10),
+            width: device.wirelessRange! * 20, // Convert meters to pixels
+            height: device.wirelessRange! * 20,
+            transform: 'translate(-0%, -0%)',
+            pointerEvents: 'none'
+          }}
         />
       )}
       
@@ -135,12 +177,16 @@ export const Device: React.FC<DeviceProps> = ({ device, selected }) => {
         }}
       >
         <div className="flex items-center justify-center flex-1">
-          <DeviceIcon deviceType={device.type} />
+          {getDeviceIcon()}
         </div>
         <span className="text-xs font-medium truncate w-full text-center">{device.name}</span>
         
         {/* Device Ports */}
         {device.ports.map(port => {
+          // Calculate position relative to device element
+          const portX = port.x * 80 - 5; // device width is 80px, center the 10px port
+          const portY = port.y * 80 - 5; // device height is 80px
+          
           // Determine if this port has a compatible connection type
           const canConnect = connectingFrom && 
             (
@@ -150,17 +196,22 @@ export const Device: React.FC<DeviceProps> = ({ device, selected }) => {
             );
           
           // Highlight port if it's the source of a current connection
-          const isConnectingSource = connectingFrom && 
-            connectingFrom.deviceId === device.id && 
-            connectingFrom.portId === port.id;
+          const isConnectingSource = connectingFrom && connectingFrom.deviceId === device.id && connectingFrom.portId === port.id;
           
           return (
-            <DevicePort
+            <div
               key={port.id}
-              port={port}
-              isConnectingSource={isConnectingSource}
-              canConnect={canConnect}
-              onClick={handlePortClick}
+              className={cn(
+                "device-port absolute w-4 h-4 rounded-full border-2 cursor-pointer hover:border-white",
+                isConnectingSource ? "border-yellow-400" : "",
+                canConnect ? "border-green-500" : "border-gray-400"
+              )}
+              style={{
+                left: portX,
+                top: portY,
+                backgroundColor: port.type.map(t => connectionColors[t])[0] || "#6b7280"
+              }}
+              onClick={(e) => handlePortClick(e, port.id)}
             />
           );
         })}

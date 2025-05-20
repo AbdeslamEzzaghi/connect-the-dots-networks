@@ -1,7 +1,7 @@
 
 import React, { useRef, useState, useEffect } from 'react';
 import { useNetworkStore } from '@/lib/network-store';
-import { Device } from './device/Device';
+import { Device } from './Device';
 import { Connection, TemporaryConnection } from './Connection';
 import { DeviceType } from '@/lib/types';
 
