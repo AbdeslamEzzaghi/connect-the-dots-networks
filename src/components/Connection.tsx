@@ -28,8 +28,9 @@ export const Connection: React.FC<ConnectionProps> = ({
       width: `${length}px`,
       transformOrigin: 'left',
       transform: `translate(${sourcePosition.x}px, ${sourcePosition.y}px) rotate(${angle}deg)`,
+      backgroundColor: connectionColors[connection.type]
     };
-  }, [sourcePosition, targetPosition]);
+  }, [sourcePosition, targetPosition, connection.type]);
 
   // For wireless connections, use dashed lines
   const isDashed = connection.type === 'wireless';
@@ -42,9 +43,8 @@ export const Connection: React.FC<ConnectionProps> = ({
     <>
       <div 
         className={cn(
-          "connection-line", 
-          connection.type,
-          isDashed && "border-dashed border-2 bg-transparent"
+          "connection-line absolute h-1", 
+          isDashed ? "border-dashed border-2 bg-transparent" : ""
         )}
         style={lineStyle}
       />
@@ -87,5 +87,5 @@ export const TemporaryConnection: React.FC<{
     };
   }, [sourcePosition, targetPosition, type]);
 
-  return <div className="temporary-connection" style={lineStyle} />;
+  return <div className="temporary-connection absolute h-1" style={lineStyle} />;
 };

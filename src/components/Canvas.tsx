@@ -97,8 +97,12 @@ export const Canvas: React.FC<CanvasProps> = ({ onCanvasClick }) => {
   return (
     <div 
       ref={canvasRef}
-      className="network-canvas w-full h-full border rounded-lg relative"
-      style={{ backgroundImage: backgroundImage ? `url(${backgroundImage})` : 'none' }}
+      className="network-canvas w-full h-full border rounded-lg relative overflow-hidden"
+      style={{ 
+        backgroundImage: backgroundImage ? `url(${backgroundImage})` : 'none',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
+      }}
       onDrop={handleDrop}
       onDragOver={handleDragOver}
       onClick={handleCanvasClick}

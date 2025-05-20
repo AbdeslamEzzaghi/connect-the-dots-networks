@@ -1,3 +1,4 @@
+
 import React, { useRef, useEffect, useState } from 'react';
 import { useNetworkStore } from '@/lib/network-store';
 import { DeviceData, connectionColors, hasWireless } from '@/lib/types';
@@ -27,6 +28,7 @@ export const Device: React.FC<DeviceProps> = ({ device, selected }) => {
   const updateDevicePosition = useNetworkStore(state => state.updateDevicePosition);
   const selectDevice = useNetworkStore(state => state.selectDevice);
   const startConnecting = useNetworkStore(state => state.startConnecting);
+  const completeConnection = useNetworkStore(state => state.completeConnection);
   const cancelConnecting = useNetworkStore(state => state.cancelConnecting);
   const connectingFrom = useNetworkStore(state => state.connectingFrom);
   const connectingType = useNetworkStore(state => state.connectingType);
@@ -37,6 +39,7 @@ export const Device: React.FC<DeviceProps> = ({ device, selected }) => {
     if (!element) return;
 
     const handleMouseDown = (e: MouseEvent) => {
+      // Don't start dragging if we're clicking on a port
       if ((e.target as HTMLElement).classList.contains('device-port')) return;
       
       setDragging(true);
@@ -91,13 +94,20 @@ export const Device: React.FC<DeviceProps> = ({ device, selected }) => {
     if (!port) return;
     
     if (connectingFrom) {
-      // Complete the connection if the port types are compatible
-      if (port.type.includes(connectingType!)) {
-        startConnecting(device.id, portId, connectingType!);
+      // We're already in connecting mode, so this is the target port
+      if (connectingFrom.deviceId !== device.id) {  // Don't connect to self
+        if (port.type.includes(connectingType!)) {
+          completeConnection(device.id, portId);
+        } else {
+          // Incompatible port types
+          cancelConnecting();
+          alert("Incompatible connection types");
+        }
       } else {
         cancelConnecting();
       }
     } else {
+      // Start connecting from this port
       // If multiple connection types are available for this port, just use the first one
       const connectionType = port.type[0];
       startConnecting(device.id, portId, connectionType);
@@ -136,12 +146,14 @@ export const Device: React.FC<DeviceProps> = ({ device, selected }) => {
       {/* Wireless Range Circle */}
       {shouldShowWirelessRange && (
         <div 
-          className="wireless-range" 
+          className="wireless-range absolute rounded-full opacity-20 bg-blue-200 border border-blue-300" 
           style={{
-            left: device.position.x + 40, // center of device
-            top: device.position.y + 40,
+            left: device.position.x + 40 - (device.wirelessRange! * 10), // center of device
+            top: device.position.y + 40 - (device.wirelessRange! * 10),
             width: device.wirelessRange! * 20, // Convert meters to pixels
             height: device.wirelessRange! * 20,
+            transform: 'translate(-0%, -0%)',
+            pointerEvents: 'none'
           }}
         />
       )}
@@ -164,23 +176,34 @@ export const Device: React.FC<DeviceProps> = ({ device, selected }) => {
           selectDevice(device.id);
         }}
       >
-        {getDeviceIcon()}
-        <span className="text-xs font-medium mt-1 truncate w-full text-center">{device.name}</span>
+        <div className="flex items-center justify-center flex-1">
+          {getDeviceIcon()}
+        </div>
+        <span className="text-xs font-medium truncate w-full text-center">{device.name}</span>
         
         {/* Device Ports */}
         {device.ports.map(port => {
           // Calculate position relative to device element
-          const portX = port.x * 80; // device width is 80px
-          const portY = port.y * 80; // device height is 80px
+          const portX = port.x * 80 - 5; // device width is 80px, center the 10px port
+          const portY = port.y * 80 - 5; // device height is 80px
           
           // Determine if this port has a compatible connection type
-          const canConnect = connectingFrom && port.type.includes(connectingType!);
+          const canConnect = connectingFrom && 
+            (
+              // If we're already connecting, check if this port can accept the connection type
+              connectingFrom.deviceId !== device.id && 
+              port.type.includes(connectingType!)
+            );
+          
+          // Highlight port if it's the source of a current connection
+          const isConnectingSource = connectingFrom && connectingFrom.deviceId === device.id && connectingFrom.portId === port.id;
           
           return (
             <div
               key={port.id}
               className={cn(
-                "device-port border-2",
+                "device-port absolute w-4 h-4 rounded-full border-2 cursor-pointer hover:border-white",
+                isConnectingSource ? "border-yellow-400" : "",
                 canConnect ? "border-green-500" : "border-gray-400"
               )}
               style={{
