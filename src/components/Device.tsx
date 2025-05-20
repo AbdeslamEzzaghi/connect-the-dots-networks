@@ -1,3 +1,4 @@
+
 import React, { useRef, useEffect, useState } from 'react';
 import { useNetworkStore } from '@/lib/network-store';
 import { DeviceData, connectionColors, hasWireless } from '@/lib/types';
@@ -7,10 +8,10 @@ import {
   Router,
   Antenna,
   Box,
-  Switch,
   Network,
   TextCursorInput,
   LineChart,
+  ServerStack,
 } from 'lucide-react';
 
 interface DeviceProps {
@@ -121,7 +122,7 @@ export const Device: React.FC<DeviceProps> = ({ device, selected }) => {
       case 'router':
         return <Router className="h-7 w-7" />;
       case 'switch':
-        return <Switch className="h-7 w-7" />;
+        return <ServerStack className="h-7 w-7" />; // Using ServerStack for switch
       case 'repeater':
         return <Antenna className="h-7 w-7" />;
       case 'modem':

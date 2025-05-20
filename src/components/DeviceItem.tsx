@@ -7,10 +7,10 @@ import {
   Router,
   Antenna,
   Box,
-  Switch,
   Network,
   TextCursorInput,
   LineChart,
+  ServerStack,
 } from 'lucide-react';
 
 interface DeviceItemProps {
@@ -30,7 +30,7 @@ export const DeviceItem: React.FC<DeviceItemProps> = ({ type, onDragStart }) => 
       case 'router':
         return <Router className="h-6 w-6" />;
       case 'switch':
-        return <Switch className="h-6 w-6" />;
+        return <ServerStack className="h-6 w-6" />; // Using ServerStack for switch
       case 'repeater':
         return <Antenna className="h-6 w-6" />;
       case 'modem':
